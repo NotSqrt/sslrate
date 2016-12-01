@@ -118,8 +118,11 @@ class CipherScorer(Scorer):
         for c in self.ciphers:
             bitsizes.setdefault(c.bitsize(), set()).add(c.name)
 
-        weakest = self.describe('Weakest cipher bitsize', min([c.bitsize() for c in self.ciphers]))
-        strongest = self.describe('Strongest cipher bitsize', max([c.bitsize() for c in self.ciphers]))
+        weakest_bitsize = min(bitsizes)
+        weakest = self.describe('Weakest cipher bitsize (%s)' % ", ".join(bitsizes[weakest_bitsize]), weakest_bitsize)
+
+        strongest_bitsize = max(bitsizes)
+        strongest = self.describe('Strongest cipher bitsize (%s)' % ", ".join(bitsizes[strongest_bitsize]), strongest_bitsize)
         return (CipherScorer.bit_score(weakest) + CipherScorer.bit_score(strongest)) / 2.0
 
 # Rate protocol
