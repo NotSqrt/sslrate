@@ -31,7 +31,8 @@ def log(text):
 
 def execute(cmd):
     proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return proc.communicate()[0].strip()
+    stdout, stderr = proc.communicate()
+    return stdout.strip(), stderr.strip()
 
 
 def wildcard_match(expression, hostname):
@@ -189,7 +190,7 @@ class KeyExchangeScorer(Scorer):
     def is_blacklisted_key(self):
         path = None
 
-        if not execute("which openssl-vulnkey"):
+        if not execute("which openssl-vulnkey")[0]:
             logger.error("openssl-vulnkey is not installed")
             return True
 
@@ -197,7 +198,11 @@ class KeyExchangeScorer(Scorer):
             with tempfile.NamedTemporaryFile(delete=False) as f:
                 path = f.name
                 f.write(self.cert())
-            return execute("cat %s | openssl-vulnkey -" % path)[0:3].lower() != 'not'
+            stdout, stderr = execute("cat %s | openssl-vulnkey -" % path)
+            if "Skipped" in stderr:
+                logger.warn("openssl-vulnkey: %s", stderr)
+            else:
+                return stdout[0:3].lower() != 'not'
         finally:
             if path is not None:
                 os.unlink(path)
