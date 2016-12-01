@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 import tempfile
 import re
 import sys
@@ -196,11 +196,11 @@ class KeyExchangeScorer(Scorer):
             return True
 
         try:
-            with tempfile.NamedTemporaryFile(delete=False) as f:
+            with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
                 path = f.name
                 f.write(self.cert())
             stdout, stderr = execute("cat %s | openssl-vulnkey -" % path)
-            if "Skipped" in stderr:
+            if b"Skipped" in stderr:
                 logger.warn("openssl-vulnkey: %s", stderr)
             else:
                 return stdout[0:3].lower() != 'not'
@@ -271,7 +271,7 @@ class CertificateScorer(Scorer):
 
 
 def process_report(path, hostname=None):
-    with open(path) as f:
+    with open(path, 'rb') as f:
         data = f.read()
     tree = ET.fromstring(data)
     error = tree.find('.//invalidTarget')
