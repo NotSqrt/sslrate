@@ -186,6 +186,10 @@ class KeyExchangeScorer(Scorer):
     def is_blacklisted_key(self):
         path = None
 
+        if not execute("which openssl-vulnkey"):
+            logger.error("openssl-vulnkey is not installed")
+            return True
+
         try:
             with tempfile.NamedTemporaryFile(delete=False) as f:
                 path = f.name
