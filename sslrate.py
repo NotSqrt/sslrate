@@ -294,9 +294,23 @@ def process_report(path, hostname=None):
     )
 
 
+def grade(score):
+    if score >= 80:
+        return "A"
+    if score >= 65:
+        return "B"
+    if score >= 50:
+        return "C"
+    if score >= 35:
+        return "D"
+    if score >= 20:
+        return "E"
+    return "F"
+
+
 def main(path, hostname=None):
     host, score, description = process_report(path, hostname)
-    print('%s\t%s\t%s'%(host,score,description))
+    print('%s\t%s\t%s\tGrade: %s' % (host, score, description, grade(score)))
 
 if __name__ == '__main__':
     sys.exit(main(*sys.argv[1:]))
