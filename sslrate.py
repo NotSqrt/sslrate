@@ -21,7 +21,7 @@ def log(text):
         @wraps(f)
         def wrapper(*args, **kwargs):
             result = f(*args, **kwargs)
-            logger.info('%s: %s'%(text, result))
+            logger.info('%s: %s', text, result)
             return result
         return wrapper
     return outer_wrap
@@ -35,11 +35,11 @@ def execute(cmd):
 
 
 def wildcard_match(expression, hostname):
-    expression = '^%s$' % (expression.replace('.', r'\.').replace(r'*\.', r'([^.]*\.)?'))
+    expression = r'^%s$' % (expression.replace('.', r'\.').replace(r'*\.', r'([^.]*\.)?'))
     return re.match(expression, hostname, re.I) is not None
 
 
-### Cipher utils
+# Cipher utils
 
 
 class Cipher(object):
@@ -85,7 +85,7 @@ class Scorer(object):
         pass
 
     def describe(self, why, score):
-        logger.info('%s: %d' % (why, score))
+        logger.info('%s: %d', why, score)
         return score
 
 
@@ -154,8 +154,8 @@ class ProtocolScorer(Scorer):
         names = set([c.protocol for c in self.ciphers])
         weakest = min([ProtocolScorer.score_protocol_name(c.protocol) for c in self.ciphers])
         strongest = max([ProtocolScorer.score_protocol_name(c.protocol) for c in self.ciphers])
-        logger.info('Weakest protocol score: %s' % weakest)
-        logger.info('strongest protocol score: %s' % strongest)
+        logger.info('Weakest protocol score: %s', weakest)
+        logger.info('strongest protocol score: %s', strongest)
         return (weakest + strongest) / 2.0
 
 # Rate key exchange
@@ -170,7 +170,7 @@ class KeyExchangeScorer(Scorer):
     def cert(self):
         try:
             return self.tree.find('.//results/target/certinfo_basic/receivedCertificateChain/certificate[1]/asPEM').text
-        except Exception as e:
+        except Exception:
             return None
 
     @log('Public key size')
@@ -276,9 +276,9 @@ def process_report(path, hostname=None):
     if hostname is not None and not cert.hostname_valid(hostname):
         return (host, 0, 'Hostname does not match certificate')
     if not cert.is_valid():
-            return (host, 0, 'Certificate is not trusted')
+        return (host, 0, 'Certificate is not trusted')
     if cert.is_insecure_signature():
-            return (host, 0, 'Signature is insecure')
+        return (host, 0, 'Signature is insecure')
     protocol = ProtocolScorer(tree)
     p_score = protocol.score()
     kx = KeyExchangeScorer(tree)
