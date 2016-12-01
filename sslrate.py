@@ -6,6 +6,7 @@ import sys
 import subprocess
 import os
 import logging
+import argparse
 from lxml import etree as ET
 from functools import wraps
 
@@ -318,4 +319,8 @@ def main(path, hostname=None):
     print('%s\t%s\t%s\tGrade: %s' % (host, score, description, grade(score)))
 
 if __name__ == '__main__':
-    sys.exit(main(*sys.argv[1:]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('path')
+    parser.add_argument('hostname', nargs='?')
+    args = parser.parse_args()
+    sys.exit(main(**vars(args)))
