@@ -169,7 +169,7 @@ class KeyExchangeScorer(Scorer):
 
     def cert(self):
         try:
-            return self.tree.find('.//target/certinfo/certificate/asPEM').text
+            return self.tree.find('.//results/target/certinfo_basic/receivedCertificateChain/certificate[1]/asPEM').text
         except Exception as e:
             return None
 
